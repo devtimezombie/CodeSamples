@@ -7,7 +7,8 @@ namespace GODSEND
 {
     public class GameSceneManager : MonoBehaviour
     {
-        public static GameSceneManager GSM; //loaded at the first game object, so it can load additional scenes on top
+        public static GameSceneManager GSM;
+        //loaded at the first game object, so it can load additional scenes on top
 
         [SerializeField]
 
@@ -43,6 +44,7 @@ namespace GODSEND
             {
                 GSM = this;
                 DontDestroyOnLoad(this.transform);
+                //make a set of input bindings so we can navigate the menu
                 UINavActions = PlayerActions.CreateWithDefaultBindings();
                 allowedToPause = false;
             }
@@ -69,6 +71,9 @@ namespace GODSEND
             LoadedSceneIndicies.Add(SceneManager.GetSceneByName(LevelSceneAsset.MenuScene.SceneName).buildIndex);
         }
 
+        /// <summary>
+        /// Ensure scene is in the build before loading, otherwise just load the main menu
+        /// </summary>
         SceneInfo ValidateScene(SceneInfo checkScene)
         {
             if (checkScene.BuildIndex > 0)
@@ -81,116 +86,112 @@ namespace GODSEND
         {
             if (InGame)
             {
-                if (UINavActions.Pause.WasPressed)
-                {
-                    if (MainMenuShowing)
-                        CloseMainMenuInGame();
-                    else
-                    {
-                        if (GamePaused)
-                        {
-                            Time.timeScale = 1;
-                            GamePaused = false;
-                            if (TogglePauseScreen != null)
-                                TogglePauseScreen();
-                        }
-                        else if (allowedToPause && !GameOverScreenShowing)
-                        {
-                            Time.timeScale = 0;
-                            GamePaused = true;
-                            if (TogglePauseScreen != null)
-                                TogglePauseScreen();
-                        }
-                    }
-                }
-
-                if (UINavActions.Help.WasPressed && !GamePaused && !GameOverScreenShowing)
-                {
-                    {
-                        if (ToggleHelpScreen != null)
-                            ToggleHelpScreen();
-                    }
-                }
-
-                if (UINavActions.MoveRight.WasPressed)
-                {
-                    if (MenuNav_Right != null)
-                        MenuNav_Right();
-                }
-                else if (UINavActions.MoveLeft.WasPressed)
-                {
-                    if (MenuNav_Left != null)
-                        MenuNav_Left();
-                }
-                if (UINavActions.MoveUp.WasPressed)
-                {
-                    if (MenuNav_Up != null)
-                        MenuNav_Up();
-                }
-                else if (UINavActions.MoveDown.WasPressed)
-                {
-                    if (MenuNav_Down != null)
-                        MenuNav_Down();
-                }
-
-                /* if (HelpShowing)
-                 {
-                     if (Input.GetKeyDown(HelpKey)) //Hide help screen
-                     {
-                         Time.timeScale = 1;
-                         HelpShowing = false;
-                         if (ToggleHelpScreen != null)
-                             ToggleHelpScreen();
-                     }
-                 }
-                 else
-                 {
-                     if (Input.GetKeyDown(HelpKey)) //Show help screen
-                     {
-                         Time.timeScale = 0;
-                         HelpShowing = true;
-                         if (ToggleHelpScreen != null)
-                             ToggleHelpScreen();
-                     }
-                 }*/
+                //second set of input checkers were generated for player input
+                //This is because I hijacked parts of the input system for the UI after the player controls were established
+                //and there is poor integration.
+                MenuNavWithGameInputs();
             }
             else
             {
-                if (UINavActions.Pause.WasPressed) //backout of menus
-                {
-                    if (MenuNav_Cancel != null)
-                        MenuNav_Cancel();
-                }
+                MenuNavWithUIInputs();
+            }
 
-                if (UINavActions.MenuNavDown.WasPressed)
+            MenuNavConfirmationInputs();
+        }
+
+        void MenuNavWithGameInputs()
+        {
+            if (UINavActions.Pause.WasPressed)
+            {
+                if (MainMenuShowing)
                 {
-                    if (MenuNav_Down != null)
-                        MenuNav_Down();
+                    CloseMainMenuInGame();
                 }
-                else if (UINavActions.MenuNavUp.WasPressed)
+                else
                 {
-                    if (MenuNav_Up != null)
-                        MenuNav_Up();
+                    if (GamePaused) //clicked to unpause
+                    {
+                        Time.timeScale = 1;
+                        GamePaused = false;
+                        if (TogglePauseScreen != null)
+                            TogglePauseScreen();
+                    }
+                    else if (allowedToPause && !GameOverScreenShowing) //clicked to pause during normal gameplay
+                    {
+                        Time.timeScale = 0;
+                        GamePaused = true;
+                        if (TogglePauseScreen != null)
+                            TogglePauseScreen();
+                    }
                 }
             }
 
+            if (UINavActions.Help.WasPressed && !GamePaused && !GameOverScreenShowing)
+            {
+                if (ToggleHelpScreen != null)
+                {
+                    ToggleHelpScreen();
+                }
+            }
+
+            if (UINavActions.MoveRight.WasPressed && MenuNav_Right != null)
+            {
+                MenuNav_Right();
+            }
+            else if (UINavActions.MoveLeft.WasPressed && MenuNav_Left != null)
+            {
+                MenuNav_Left();
+            }
+            if (UINavActions.MoveUp.WasPressed && MenuNav_Up != null)
+            {
+                MenuNav_Up();
+            }
+            else if (UINavActions.MoveDown.WasPressed && MenuNav_Down != null)
+            {
+                MenuNav_Down();
+            }
+        }
+
+        void MenuNavWithUIInputs()
+        {
+            if (UINavActions.Pause.WasPressed && MenuNav_Cancel != null)
+            {
+                MenuNav_Cancel();
+            }
+
+            if (UINavActions.MenuNavDown.WasPressed && MenuNav_Down != null)
+            {
+                MenuNav_Down();
+            }
+            else if (UINavActions.MenuNavUp.WasPressed && MenuNav_Up != null)
+            {
+                MenuNav_Up();
+            }
+        }
+
+        void MenuNavConfirmationInputs()
+        {
             if (UINavActions.Accept.WasPressed)
             {
                 if (MenuNav_Accept != null)
+                {
                     MenuNav_Accept();
+                }
             }
             if (UINavActions.Cancel.WasPressed)
             {
                 if (InGame && MainMenuShowing)
+                {
                     CloseMainMenuInGame();
+                }
                 else if (MenuNav_Cancel != null)
+                {
                     MenuNav_Cancel();
+                }
             }
-
-
-
         }
 
+        //UI button to close the pause menu
         public void ClosePauseMenuButton()
         {
             Time.timeScale = 1;
@@ -353,6 +354,7 @@ namespace GODSEND
             AddSceneDirect(LevelSceneAsset.MenuScene.SceneName);
         }
 
+        //Unload main menu if it was only used to reference game options
         public void CloseMainMenuInGame()
         {
             if (InGame)

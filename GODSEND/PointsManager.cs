@@ -33,7 +33,9 @@ public class PointsManager : MonoBehaviour
         get
         {
             if (pointsMessages.Length == 0)
+            {
                 GenerateMessageBubbles();
+            }
             return UnqueuedMoments[0];
         }
     }
@@ -64,7 +66,9 @@ public class PointsManager : MonoBehaviour
         scoreStartColor = scoreUIText.color;
         TotalPoints = 0;
         if (scoreUIText == null)
+        {
             Debug.LogWarning("Points UI text not assigned in inspector", gameObject);
+        }
     }
 
     public void OnRestart()
@@ -123,9 +127,6 @@ public class PointsManager : MonoBehaviour
         {
             //t_feature is whatever kill info we want
             MomentFeature_AIState(circumstance, corpse.AIMentalState, corpse.lastDamageSource is CharacterBody ? corpse.lastDamageSource.bodyType : BodyType.None);
-            //t_features.Add(MomentFeature_CauseOfDeath(circumstance, corpse.CurrentBody.bodyType, corpse.lastDamageSource is CharacterBody ? corpse.lastDamageSource.bodyType : BodyType.None));
-            //AnnotateMoment(t_feature, corpse);
-
             RecentlyKilledEnemies.Add(corpse);
 
             //add to queued messages
@@ -141,7 +142,7 @@ public class PointsManager : MonoBehaviour
     {
         if (noBody)
         {
-            CurrentFeature.pointValue = -TotalPoints / 2;//-300;
+            CurrentFeature.pointValue = -TotalPoints / 2;
             CurrentFeature.description = "ANNIHILATION";
         }
         else
@@ -163,7 +164,7 @@ public class PointsManager : MonoBehaviour
         {
             switch (aIStates)
             {
-                case (AIStates.Stunned): 
+                case (AIStates.Stunned):
                     if (bodyType == BodyType.Player)
                     {
                         CurrentFeature.pointValue = 50;
@@ -175,13 +176,9 @@ public class PointsManager : MonoBehaviour
                         CurrentFeature.description = "DUNK";
                     }
                     break;
-                case (AIStates.Chasing): 
+                case (AIStates.Chasing):
                     CurrentFeature.pointValue = 50;
                     CurrentFeature.description = "Bait";
-                    break;
-                case (AIStates.Following): //currently unused
-                    CurrentFeature.pointValue = 100;
-                    CurrentFeature.description = "Abuse of trust";
                     break;
             }
         }
@@ -211,7 +208,7 @@ public class PointsManager : MonoBehaviour
                     CurrentFeature.pointValue = 80;
                     CurrentFeature.description = "Cold blooded murder";
                     break;
-                default: 
+                default:
                     CurrentFeature.pointValue = 10;
                     CurrentFeature.description = "Something cool";
                     break;
@@ -254,7 +251,9 @@ public class PointsManager : MonoBehaviour
     void DisplayMoment(string momentText)
     {
         if (pointsMessages.Length == 0)
+        {
             GenerateMessageBubbles();
+        }
         bubbleIndex = bubbleIndex % numberOfPointsMessages;
         pointsMessages[bubbleIndex].SetText(momentText);
         bubbleIndex++;
@@ -265,9 +264,13 @@ public class PointsManager : MonoBehaviour
     string FormatBodyTypeForDescription(BodyType type)
     {
         if (type == BodyType.None || type == BodyType.all)
+        {
             return "fate";
+        }
         else
+        {
             return EnemyManager.CreatureName(type);
+        }
     }
     #endregion
 }

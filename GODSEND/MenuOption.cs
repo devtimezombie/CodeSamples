@@ -10,7 +10,7 @@ public class MenuOption : MonoBehaviour
     }
     public virtual void Click()
     {
-        // AkSoundEngine.PostEvent("Accept", gameObject);
+        
     }
     public virtual void NavFrom() { }
     public virtual void OnPointerEnter(PointerEventData eventData) { } //highlight, via mouse
@@ -23,8 +23,9 @@ public class MenuOption : MonoBehaviour
  * 
  */
 
-//Menu buttons, for navigating menus
-
+/// <summary>
+/// Menu buttons, for navigating menus
+/// </summary>
 public class MenuButton : MenuOption
 {
     IMenu sceneMenu;
@@ -46,7 +47,6 @@ public class MenuButton : MenuOption
     public override void NavFrom()
     {
         m_FontFade.SetExit();
-
     }
 
     public void Awake()
@@ -68,8 +68,9 @@ public class MenuButton : MenuOption
     }
 }
 
-//menu toggles, for turning options on and off
-
+/// <summary>
+/// menu toggles/checkboxes, for turning options on and off
+/// </summary>
 public class MenuToggle : MenuOption
 {
     IMenu sceneMenu;

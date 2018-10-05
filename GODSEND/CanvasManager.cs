@@ -5,6 +5,7 @@ using GODSEND;
 
 public class CanvasManager : MonoBehaviour
 {
+    //centralized reference for canvas relevant features
     public static CanvasManager CM;
     public TutorialManager tutorialManager; //turns objects off and on based on location in tutorial
     public InGameUIListener inGameUIListener; //interprets input to trigger UI updates 
@@ -33,14 +34,18 @@ public class CanvasManager : MonoBehaviour
                 player.PreventInput = value;
             }
             else
+            {
                 player.PreventInput = oldPlayerInputValue;
+            }
         }
     }
 
     public static bool IsPrepped()
     {
         if (CM is CanvasManager)
+        {
             return true;
+        }
         else
         {
             Debug.LogError("Canvas manager not assigned, likely because you didn't turn on the UI");
@@ -56,11 +61,15 @@ public class CanvasManager : MonoBehaviour
             this.enabled = false;
         }
         else
+        {
             CM = this;
+        }
         player = GameObject.FindObjectOfType<PlayerController>().GetComponent<PlayerController>();
 
         if (GameSceneManager.GSM != null)
+        {
             UsingController = GameSceneManager.GSM.UINavActions.LastInputType == InControl.BindingSourceType.DeviceBindingSource;
+        }
     }
 
     public void StartUsingController()

@@ -25,6 +25,8 @@ public class DeathScreen : MonoBehaviour
         youDiedTextColor = youDiedText.color;
         screen.gameObject.SetActive(false);
     }
+
+    //request death notification on death. 
     public void ShowScreen()
     {
         if (PreventDeathScreenFromShowing)
@@ -33,20 +35,23 @@ public class DeathScreen : MonoBehaviour
         DeathScreenIsVisible = true;
         screen.gameObject.SetActive(true);
         if (showPopup is Coroutine)
+        {
             StopCoroutine(showPopup);
+        }
 
         showPopup = StartCoroutine(revealDelay());
     }
 
+    //hide when the player acknowledges it
     public void HideScreen()
     {
         DeathScreenIsVisible = false;
         screen.gameObject.SetActive(false);
     }
 
+    //like in dark souls, show a banner, show "YOU DIED" and give the player the input to continue once they've seen the message
     IEnumerator revealDelay()
     {
-        //CanvasManager.CM.player.PreventAttacks=true;
         CanvasManager.CM.PreventUIControls = true;
         screen.fillAmount = 0;
         uDiedTextColorInc = 0;
@@ -63,18 +68,19 @@ public class DeathScreen : MonoBehaviour
             }
             yield return null;
         }
-        //yield return oneSec;
-        //youDiedText.text = uDied;
+
         CanvasManager.CM.PreventUIControls = false;
         yield return oneSec;
         continueText.text = "Press " + (CanvasManager.CM.UsingController ? "(A)" : "[Enter]") + " to respawn.";
-        //CanvasManager.CM.player.PreventAttacks = false;
     }
 
+    //disallow death notifications after the game is over
     public void StopDeathScreenOnGameResolution()
     {
         if (showPopup != null)
+        {
             StopCoroutine(showPopup);
+        }
         screen.gameObject.SetActive(false);
         PreventDeathScreenFromShowing = true;
         CanvasManager.CM.PreventUIControls = false;

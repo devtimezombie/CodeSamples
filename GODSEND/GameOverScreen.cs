@@ -23,10 +23,14 @@ public class GameOverScreen : MonoBehaviour
     private void Start()
     {
         foreach (GameObject g in objectsToShow)
+        {
             g.SetActive(false);
-
+        }
     }
 
+    /// <summary>
+    /// Show results screen of either win or loss
+    /// </summary>
     public void AddHighScore(bool endStateIsLoss, float score, string time)
     {
         if (endStateIsLoss)
@@ -54,12 +58,14 @@ public class GameOverScreen : MonoBehaviour
         while (!gameObject.activeInHierarchy)
             yield return null;
 
+        //slide in from right
         while (sideBar.rectTransform.localPosition.y < -50)
         {
             sideBar.rectTransform.localPosition += Vector3.up * 2;
             yield return null;
         }
 
+        //show text via slow fade in
         float f = 0;
         while (LEVELText.color.a < 1)
         {
@@ -81,7 +87,6 @@ public class GameOverScreen : MonoBehaviour
 
         if (finishTime.gameObject.activeInHierarchy && finishTime.text != "")
         {
-            //yield return delay;
             finishTime.text = timePrefix + " " + time.ToString();
             f = 0;
             while (finishTime.color.a < 1)
@@ -94,7 +99,6 @@ public class GameOverScreen : MonoBehaviour
 
         if (highScoreText.gameObject.activeInHierarchy && highScoreText.text != "")
         {
-            //yield return delay;
             highScoreText.text = scorePrefix + " " + score + " " + scoreSuffix;
             f = 0;
             while (highScoreText.color.a < 1)
@@ -111,6 +115,7 @@ public class GameOverScreen : MonoBehaviour
             NextLevelButton.gameObject.SetActive(false);
         }
 
+        //reveal buttons
         yield return delay;
         foreach (GameObject g in objectsToShow)
         {

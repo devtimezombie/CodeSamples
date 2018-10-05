@@ -5,6 +5,10 @@ using UnityEngine.SceneManagement;
 
 namespace GODSEND
 {
+    /// <summary>
+    /// Holds reference to UI relevant to game overlays
+    /// 
+    /// </summary>
     public class InGameUIListener : MonoBehaviour
     {
         public GameObject PauseScreen;
@@ -18,12 +22,15 @@ namespace GODSEND
             set
             {
                 if (currentMenuButton is MenuButton)
+                {
                     currentMenuButton.NavFrom();
+                }
                 currentMenuButton = value;
                 currentMenuButton.NavTo();
             }
         }
         int currentMenuButtonIndex;
+        //i believe that for the tutorial, this shows relevant input hints
         public GameObject ControlHelp_KB, ControlHelp_XBOX;
 
         public void SetMenuButton(MenuButton button)
@@ -32,20 +39,24 @@ namespace GODSEND
             if (GameOverScreen.activeInHierarchy)
             {
                 for (int i = 0; i < gameOverButtons.Length; i++)
+                {
                     if (gameOverButtons[i] == CurrentMenuButton)
                     {
                         currentMenuButtonIndex = i;
                         break;
                     }
+                }
             }
             else
             {
                 for (int i = 0; i < pauseMenuButtons.Length; i++)
+                {
                     if (pauseMenuButtons[i] == CurrentMenuButton)
                     {
                         currentMenuButtonIndex = i;
                         break;
                     }
+                }
             }
         }
 
@@ -89,6 +100,7 @@ namespace GODSEND
         {
             if (!PauseScreen.activeInHierarchy && !GameOverScreen.activeInHierarchy)
                 return;
+
             if (GameOverScreen.activeInHierarchy)
             {
                 currentMenuButtonIndex = currentMenuButtonIndex <= 0 ? gameOverButtons.Length - 1 : currentMenuButtonIndex - 1;
@@ -104,6 +116,9 @@ namespace GODSEND
         {
             if (!PauseScreen.activeInHierarchy && !GameOverScreen.activeInHierarchy)
                 return;
+
+            //if the game has ended, allow player to either quit or retry
+            //otherwise, navigate the pause screen
             if (GameOverScreen.activeInHierarchy)
             {
                 currentMenuButtonIndex = currentMenuButtonIndex >= gameOverButtons.Length - 1 ? 0 : currentMenuButtonIndex + 1;
@@ -135,54 +150,37 @@ namespace GODSEND
             }
         }
 
-        public void TogglePauseScreen() //click pause, only once, whether in debug mode or not
+        public void TogglePauseScreen() //click pause, show pause menu, whether in debug mode or not
         {
-            if (Application.isEditor)
+            if (PauseScreen != null)
             {
-                if (PauseScreen != null)
+                if ((Application.isEditor && PauseScreen.activeInHierarchy) || (!Application.isEditor && !GameSceneManager.GamePaused))
                 {
-                    if (PauseScreen.activeInHierarchy)
-                    {
-                        PauseScreen.SetActive(false);
+                    PauseScreen.SetActive(false);
+                    if (Application.isEditor)
                         Time.timeScale = 1;
-                        CanvasManager.CM.PreventAllPlayerInput = false;
-                    }
-                    else if (!GameSceneManager.GameOverScreenShowing)
-                    {
-                        PauseScreen.SetActive(true);
-                        if (pauseMenuButtons.Length > 0)
-                            CurrentMenuButton = pauseMenuButtons[0];
-                        CanvasManager.CM.PreventAllPlayerInput = true;
-                        Time.timeScale = 0;
-                    }
-                }
-            }
-            else
-            {
-                if (!GameSceneManager.GamePaused)//HelpShowing)
-                {
-                    if (PauseScreen != null)
-                        PauseScreen.SetActive(false);
                     CanvasManager.CM.PreventAllPlayerInput = false;
                 }
                 else if (!GameSceneManager.GameOverScreenShowing)
                 {
-                    if (PauseScreen != null)
-                    {
-                        PauseScreen.SetActive(true);
-                        if (pauseMenuButtons.Length > 0)
-                            CurrentMenuButton = pauseMenuButtons[0];
-                    }
+                    PauseScreen.SetActive(true);
+                    if (pauseMenuButtons.Length > 0)
+                        CurrentMenuButton = pauseMenuButtons[0];
                     CanvasManager.CM.PreventAllPlayerInput = true;
+                    if (Application.isEditor)
+                        Time.timeScale = 0;
                 }
+
             }
         }
 
+        //set ui input to relevant button
         public void ShowGameOverScreen()
         {
             SetMenuButton(gameOverButtons[0]);
         }
 
+        //show hide ability notes
         public void ToggleHelpOverlay()
         {
             CanvasManager.CM.movesetUI.ToggleHelp();
@@ -201,17 +199,20 @@ namespace GODSEND
                 GameSceneManager.GSM.ClosePauseMenuButton();
                 GameSceneManager.GameOverScreenShowing = false;
             }
-            //else
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            //CanvasManager.CM.ResetLevel();
         }
 
         public void GoToNextLevel()
         {
             if (GameSceneManager.GSM != null)
+            {
+                //-1 is normally invalid, so it's used here as a notice to load the next level
                 GameSceneManager.GSM.LoadSpecificGameplayLevel(-1);
+            }
             else
+            {
                 Debug.LogWarning("No game scene manager to change level!");
+            }
         }
 
         public void InGame_Settings()
@@ -219,18 +220,26 @@ namespace GODSEND
             if (GameSceneManager.GSM is GameSceneManager)
             {
                 if (!GameSceneManager.MainMenuShowing)
+                {
                     GameSceneManager.GSM.ShowSettingsScreenInGame();
+                }
             }
             else
+            {
                 Debug.LogWarning("Show Settings command requested, no GameSceneManager in scene to respond");
+            }
         }
 
         public void InGame_Quit()
         {
             if (GameSceneManager.GSM is GameSceneManager)
+            {
                 GameSceneManager.GSM.QuitToMenuInGame();
+            }
             else
+            {
                 Debug.LogWarning("Quit to Main Menu command requested, no GameSceneManager in scene to respond");
+            }
         }
     }
 }

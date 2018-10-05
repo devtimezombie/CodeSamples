@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+/// <summary>
+/// Displaces info from serializable object relating to game levels
+/// Built for crossreferencing between unity's build settings and details of a scene in-game
+/// this is the final version used for this project, with a much better version elsewhere in my github repo
+/// </summary>
 [CustomEditor(typeof(LevelSceneReferences))]
 public class LevelSceneEditor : Editor
 {
@@ -69,6 +74,8 @@ public class LevelSceneEditor : Editor
         if (GUILayout.Button("Refresh"))
             RefreshAll();
 
+        //list three imporant scens (startup, load screen, main menu)
+        //List them in rows, with their name and their build index number
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Important Scenes", EditorStyles.boldLabel);
 
@@ -97,6 +104,7 @@ public class LevelSceneEditor : Editor
             FillSceneInfo(LSR.LoadingScene);
         EditorGUILayout.EndHorizontal();
 
+        //show all other scenes, which are presumably for gameplay, and listed in the order of where they show up
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Gameplay Scenes", EditorStyles.boldLabel);
         for (int i = 0; i < LSR.GameplayScenes.Count; i++)
@@ -112,6 +120,7 @@ public class LevelSceneEditor : Editor
             EditorGUILayout.EndHorizontal();
         }
 
+        //instead of replacing a current scene, you can add this one to the list
         if (sceneAssetSuggested is SceneAsset)
         {
             EditorGUILayout.BeginHorizontal();
@@ -124,6 +133,7 @@ public class LevelSceneEditor : Editor
             EditorGUILayout.EndHorizontal();
         }
 
+        // info to be generated if you test a given scene
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Fill values with scene asset", EditorStyles.boldLabel);
         sceneAssetSuggested = (SceneAsset)EditorGUILayout.ObjectField("Scene Asset to Use", sceneAssetSuggested, typeof(SceneAsset), false); //(UnityEditor.SceneAsset)
@@ -143,7 +153,7 @@ public class LevelSceneEditor : Editor
 
 
         }
-
+        //reference in case I broke something during testing
         EditorGUILayout.Space();
         EditorGUILayout.Space();
         EditorGUILayout.Space();
@@ -161,6 +171,7 @@ public class LevelSceneEditor : Editor
         }
     }
 
+    //fill out custom class's info, containing scene name, build index, and other useful data
     void FillSceneInfo(SceneInfo t_SI, int arrayIndex = -1)
     {
         t_SI.SceneName = sceneAssetSuggested.name;

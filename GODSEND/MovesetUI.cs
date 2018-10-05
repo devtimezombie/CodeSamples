@@ -37,7 +37,6 @@ public class MovesetUI : MonoBehaviour
 
     private void Start()
     {
-        //backing.SetActive(false);
         help_ability1Back.SetActive(false);
         help_ability2Back.SetActive(false);
         CanvasManager.CM.StartedUsingController += ChangePromptsToController;
@@ -55,6 +54,9 @@ public class MovesetUI : MonoBehaviour
         SetBody(BodyType.Player);
     }
 
+    /// <summary>
+    /// automatically switches input hints for controller
+    /// </summary>
     void ChangePromptsToController()
     {
         AbilityStandard.InputHintIcon_KB.SetActive(false);
@@ -66,6 +68,9 @@ public class MovesetUI : MonoBehaviour
             AbilityDown.InputHintIcon_controller.SetActive(true);
     }
 
+    /// <summary>
+    /// automatically switches input hints for mouse + keyboard
+    /// </summary>
     void ChangePromptsToKeyboard()
     {
         AbilityStandard.InputHintIcon_controller.SetActive(false);
@@ -103,6 +108,10 @@ public class MovesetUI : MonoBehaviour
             addAbilityUI = StartCoroutine(AddAbilities(source));
     }
 
+    //it's come to my attention that it would have been more effective to use a scriptable object reference
+    //and then pass that through instead of hardcoding hint text
+    //1. that is a great idea.
+    //2. i'm still stuck localizing info do this UI component because people kept modifying the character prefabs. I'm lucky I got the character body tag to stick.
     IEnumerator AddAbilities(BodyType source) //show ability icons based on current body. Player has no abilities, grunts have 1, beasts have 2
     {
         help_ability1Back.SetActive(false);
@@ -125,6 +134,7 @@ public class MovesetUI : MonoBehaviour
 
         yield return delay;
 
+        //slowly show ability icons and names. Then hide the names so they don't bother anyone
         switch (source)
         {
             case (BodyType.Player):
@@ -179,6 +189,9 @@ public class MovesetUI : MonoBehaviour
         showHelpUI = StartCoroutine(showHelpBriefly());
     }
 
+    /// <summary>
+    /// When a body is possessed, it serves as extra health. toggle the UI if it's relevant
+    /// </summary>
     void SetArmor(bool active)
     {
         if (armorStuff != null)
@@ -187,6 +200,10 @@ public class MovesetUI : MonoBehaviour
             armour.fillAmount = 1;
     }
 
+    /// <summary>
+    /// show/hide the names of the abilities
+    /// coroutines allows some animation offsetting for a pop
+    /// </summary>
     public void ToggleHelp()
     {
         if (!gameObject.activeInHierarchy)
@@ -219,6 +236,9 @@ public class MovesetUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// automate turning off and on the names of the abilities
+    /// </summary>
     IEnumerator showHelpBriefly()
     {
         yield return toggleHelp(true);

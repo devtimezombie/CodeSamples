@@ -37,7 +37,9 @@ namespace GODSEND
             set
             {
                 if (currentMenuButton is MenuOption)
+                {
                     currentMenuButton.NavFrom();
+                }
                 currentMenuButton = value;
                 currentMenuButton.NavTo();
             }
@@ -62,11 +64,13 @@ namespace GODSEND
         {
             CurrentMenuButton = button;
             for (int i = 0; i < currentMenu.buttons.Length; i++)
+            {
                 if (currentMenu.buttons[i] == CurrentMenuButton)
                 {
                     currentMenuButtonIndex = i;
                     break;
                 }
+            }
         }
 
         private void OnEnable() //attach controller inputs ant UI events
@@ -136,7 +140,9 @@ namespace GODSEND
                 currentMenu.buttons[currentMenu.cancelButtonIndex].Click();
             }
             else
+            {
                 Debug.LogWarning(currentMenu.MenuObject.name + " does not have a cancel button assigned", gameObject);
+            }
         }
 
         void Start()
@@ -159,7 +165,10 @@ namespace GODSEND
             }
         }
 
-        //show the selected menu
+        
+        /// <summary>
+        /// show the selected major menu (level selection, options menu, etc)
+        /// </summary>
         public void ShowMenu(GameMenuCodeName codeName)
         {
             HideAllMenus();
@@ -174,6 +183,10 @@ namespace GODSEND
             StartAtDefaultButton();
         }
 
+        /// <summary>
+        /// set navigation while a major menu is already open
+        /// usually for confirmation dialogs
+        /// </summary>
         public void ShowSubMenu(int index)
         {
             if (index >= 0 && index < gameMenuList.Length)
@@ -194,12 +207,14 @@ namespace GODSEND
                     previousIndex = currentMenuButtonIndex;
                     StartAtDefaultButton();
                 }
-
             }
             else
+            {
                 Debug.LogWarning("not a valid sub menu index number");
+            }
         }
 
+        //move controller navigation to submenu options
         void StartAtDefaultButton()
         {
             if (currentMenu.buttons.Length > 0)
@@ -211,10 +226,12 @@ namespace GODSEND
                 CurrentMenuButton = currentMenu.buttons[currentMenuButtonIndex];
             }
             else
+            {
                 Debug.LogWarning("Menu has no list of buttons to navigate");
+            }
         }
 
-        //load the game scene
+        //load the first game scene from the list
         public void LoadMainGame()
         {
             GameSceneManager.GSM.LoadSpecificGameplayLevel();
@@ -226,6 +243,7 @@ namespace GODSEND
             Application.Quit();
         }
 
+        //for level selection, UI buttons would set a particular level number and load that one
         public void LoadGameplayLevelByIndex(int numberInArray)
         {
             GameSceneManager.GSM.LoadSpecificGameplayLevel(numberInArray);
@@ -239,7 +257,9 @@ namespace GODSEND
                 ShowSubMenu(0);
             }
             else
+            {
                 GameSceneManager.GSM.CloseMainMenuInGame();
+            }
         }
     }
 }
